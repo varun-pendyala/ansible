@@ -1,0 +1,22 @@
+---
+- name: removing the user
+  hosts: all
+
+  tasks:
+    - include_vars: users.yml
+
+    - name: remove the user
+      user:
+        name: "{{ item.username }}"
+        state: absent
+        remove: yes
+      with_items: '{{users}}'
+
+    - name: Removing user sudo privileges
+      lineinfile:
+        dest: /etc/sudoers
+        state: absent
+        regexp: "^{{ item.username }}"
+      with_items: "{{users}}"
+
+  become: true

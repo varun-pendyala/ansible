@@ -1,0 +1,44 @@
+---
+- name: Create user
+  hosts: all
+  #user: root
+  tasks:
+
+    - include_vars: users.yml
+
+    - name: Create new user
+      user:
+        name: "{{ item.username }}"
+        comment: "Created with ansible"
+        state: present
+        shell: /bin/bash
+        createhome: yes
+      with_items: "{{users}}"
+
+    - name: Create .ssh directory
+      file:
+        path: /home/{{ item.username }}/.ssh
+        state: directory
+        owner: "{{ item.username }}"
+        group: "{{ item.username }}"
+        mode: 0775
+      with_items: "{{users}}"
+
+    - name: authorized key upload
+      copy:
+        src: ~/ansible/create_and_delete_user/public_kays/{{ item.username }}.pub
+        dest: /home/{{ item.username }}/.ssh/authorized_keys
+        owner: "{{ item.username }}"
+        group: "{{ item.username }}"
+        mode: 0600
+      with_items: "{{users}}"
+
+    - name: Adding user to sudo privileges
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        line: '{{ item.username }} ALL=(ALL:ALL) NOPASSWD: ALL'
+      when: '{{ item.use_sudo }} == True'
+      with_items: "{{users}}"
+
+  become: true

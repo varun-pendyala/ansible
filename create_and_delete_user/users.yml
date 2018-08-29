@@ -1,0 +1,6 @@
+---
+users:
+  - username: varun
+    use_sudo: yes
+  - username: monitoring
+    use_sudo: no

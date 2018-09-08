@@ -26,7 +26,7 @@
 
     - name: authorized key upload
       copy:
-        src: ~/ansible/create_and_delete_user/public_kays/{{ item.username }}.pub
+        src: ~/ansible/create_and_delete_user/public_keys/{{ item.username }}.pub
         dest: /home/{{ item.username }}/.ssh/authorized_keys
         owner: "{{ item.username }}"
         group: "{{ item.username }}"
